@@ -7,4 +7,5 @@ test/dummy/log/*.log
 test/dummy/tmp/
 test/tmp/
 *.gem
+*.iml
 coverage/
