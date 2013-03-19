@@ -6,7 +6,7 @@ require "pikaday-gem/version"
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
   s.name        = "pikaday-gem"
-  s.version     = AngularGem::VERSION
+  s.version     = PikadayGem::VERSION
   s.authors     = ["Christian Vuerings", "Scot Hacker", "Yu-Hung Lin"]
   s.email       = ["vueringschristian@gmail.com", "yuhung@yuhunglin.com"]
   s.homepage    = "http://github.com/ets-berkeley-edu/pikaday-gem"

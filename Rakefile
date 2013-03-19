@@ -10,97 +10,110 @@ Bundler::GemHelper.install_tasks
 require 'rake'
 # http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/classes/Net/HTTP.html
 require 'rake/testtask'
-require 'net/http'
-require 'nokogiri'
+require 'open-uri'
+require 'json'
 
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = false
-end
+dir_assets = 'vendor/assets/'
+dir_js = dir_assets + 'javascripts'
+dir_css = dir_assets + 'stylesheets'
 
-js_dir = 'vendor/assets/javascripts/'
-
-desc 'Fetches angular.js file from code.angular.js'
+desc 'Downloads the pickaday CSS and JavaScript files from GitHub'
 task :download do |t|
+
+  def create_dir dir, version
+    dir_name = File.join(dir, version)
+    Dir.mkdir(dir_name) unless Dir.exist?(dir_name)
+  end
+
+  def download_file url, dir, filename, version
+    Dir.chdir(File.join(dir, version)) do
+      if File.exists?(filename)
+        puts " #{dir + '/' + version + '/' + filename} already exists"
+        next
+      end
+      puts " #{url}"
+      open(filename, "w") { |file| file.write(open(url).read)}
+    end
+  end
+
+  # Specify which version you want
   version = ENV['VERSION']
   version ||= 'latest'
   puts "Target version: #{version.chomp('/')}"
-  additional_components = ENV['COMPONENTS'].split(",") unless ENV['COMPONENTS'].nil?
-  additional_components ||= ['resource', 'sanitize']
-  components = ['angular'].concat additional_components.map{|entry| "angular-#{entry}"}
-  puts "Target components: #{components}"
-  angular_root = "code.angularjs.org"
-  Net::HTTP.start(angular_root) do |http|
-    resp = http.get("/")
-    doc = Nokogiri::HTML(resp.body)
-    links = doc.css('a')
-    known_versions = links.map {|link| link.attribute('href').to_s}.uniq.sort.reverse
-    known_versions.delete_if do |href|
-      href.empty?  || (href =~ /^([0-9]).*\/$/).nil?
-    end
 
-    if !(known_versions.include? version + "/")
-      puts "WARN: Specified version='#{version}' not found, setting to latest version: '#{known_versions.first}'"
-      version = known_versions.first
+  # Get the different versions
+  tags_url = 'https://api.github.com/repos/dbushell/Pikaday/tags'
+  result = JSON.parse(open(tags_url).read)
+  versions = result.map { |item| item['name'] }
+
+  puts "Available versions: #{versions.inspect}"
+
+  # Figuring out which version to get
+  if versions.include? version
+    get_version = version
+  else
+    get_version = versions.first
+
+    if !(versions.include? version) && version != 'latest'
+      puts "Warning: The version you've specified: '#{version}' wasn't found, using the latest version instead: '#{get_version}'"
     end
   end
 
-  Dir.mkdir(File.join(js_dir, version)) unless Dir.exist?(File.join(js_dir, version))
-  Dir.chdir(File.join(js_dir, version)) do
-    Net::HTTP.start(angular_root) do |http|
-      components.each do |component|
-        filename = "#{component}-#{version.chomp('/')}.js"
-        next if File.exists?(filename)
-        resp = http.get("/#{version}/#{component}.js")
-        puts "Creating #{filename}" if resp.is_a?(Net::HTTPSuccess)
-        open(filename, "w") { |file| file.write(resp.body)}
-      end
-    end
-  end
+  # Get the right commit
+  commit = result.select { |item| item['name'] == get_version }.first['commit']['sha']
+  puts "We'll use the following commit to get the files: #{commit}"
+
+  # Creating the necessary directories
+  create_dir dir_js, get_version
+  create_dir dir_css, get_version
+
+  # Download the right files
+  url_root = 'https://raw.github.com/dbushell/Pikaday/' + commit + '/'
+  url_js = url_root + 'pikaday.js'
+  url_css = url_root + '/css/pikaday.css'
+
+  puts "Downloading... \n"
+  download_file url_js, dir_js, 'pikaday.js', get_version
+  download_file url_css, dir_css, 'pikaday.css', get_version
+
 end
 
 desc 'Tag the default file versions for asset helpers'
-task :tag_default do |t|
-  Rake::Task["tag"].invoke
-end
-
-desc 'Tag the unstable file versions for asset helpers'
-task :tag_unstable do |t|
-  ENV['UNSTABLE_TAG'] = "-unstable"
-  Rake::Task["tag"].invoke
-end
-
 task :tag do |t|
+  Rake::Task['tag_default'].invoke
+end
+
+task :tag_default do |t|
+
+  def copy_files dir, version
+    Dir.entries(File.join(dir, version)).each do |file|
+      file_source = File.join(dir, version, file)
+      file_destination = File.join(dir, file)
+      if File.file?(file_source)
+        FileUtils.cp file_source, file_destination, { verbose: true }
+      end
+    end
+  end
+
   version = ENV['VERSION']
   version ||= 'latest'
-  additional_components = ENV['COMPONENTS'].split(",") unless ENV['COMPONENTS'].nil?
-  additional_components ||= ['resource', 'sanitize']
-  components = ['angular.js'].concat additional_components.map{|entry| "angular-#{entry}.js"}
-
-  unstable_tag = ENV['UNSTABLE_TAG'] || ''
 
   puts "Target version: #{version.chomp('/')}"
 
-
-  Dir.chdir(js_dir) do
+  Dir.chdir(dir_js) do
     version_directories = Dir.glob("*").select { |fn| File.directory?(fn) }.sort.reverse
+
+    puts "Available versions: #{version_directories.inspect}"
     if !(version_directories.include? version)
-      puts "WARN: Specified version='#{version}' not found, setting to latest version: '#{version_directories.first}'"
+      if version != 'latest'
+        puts "WARN: Specified version='#{version}' not found, setting to latest version: '#{version_directories.first}'"
+      end
       version = version_directories.first
     end
-    new_files = Hash[*Dir.glob("#{version}/*").map {|longfn| [longfn.split(version+'/', 2)[1].chomp("-#{version}.js")+'.js', longfn]}.flatten]
-    # Make sure all the components we want are there before overwriting.
-    if !(new_files.keys & components == components)
-      puts "ERROR: Target version directory does not contain all the components for updating: #{components}"
-      exit
-    end
-
-    components.each do |file|
-      FileUtils.cp new_files[file], file.chomp('.js')+unstable_tag+'.js', {verbose: true}
-    end
   end
+
+  copy_files dir_js, version
+  copy_files dir_css, version
 end
 
 task :default => :test

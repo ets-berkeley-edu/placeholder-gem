@@ -1,6 +1,6 @@
 require "rails/engine"
 
-module AngularGem
+module PikadayGem
 	class Engine < Rails::Engine
 	end
 end
