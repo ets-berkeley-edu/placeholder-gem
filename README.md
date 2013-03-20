@@ -1,43 +1,53 @@
-# Angular-Gem - Just AngularJS
-[![Gem Version](https://badge.fury.io/rb/angular-gem.png)](http://badge.fury.io/rb/angular-gem) [![Build Status](https://secure.travis-ci.org/ets-berkeley-edu/angular-gem.png)](http://travis-ci.org/ets-berkeley-edu/angular-gem) [![Dependency Status](https://gemnasium.com/ets-berkeley-edu/angular-gem.png)](https://gemnasium.com/ets-berkeley-edu/angular-gem) [![Code Climate](https://codeclimate.com/github/ets-berkeley-edu/angular-gem.png)](https://codeclimate.com/github/ets-berkeley-edu/angular-gem) [![Coverage Status](https://coveralls.io/repos/ets-berkeley-edu/angular-gem/badge.png?branch=master)](https://coveralls.io/r/ets-berkeley-edu/angular-gem)
+# Pikaday Gem
+[![Gem Version](https://badge.fury.io/rb/pikaday-gem.png)](http://badge.fury.io/rb/pikaday-gem) [![Build Status](https://secure.travis-ci.org/ets-berkeley-edu/pikaday-gem.png)](http://travis-ci.org/ets-berkeley-edu/pikaday-gem) [![Dependency Status](https://gemnasium.com/ets-berkeley-edu/pikaday-gem.png)](https://gemnasium.com/ets-berkeley-edu/pikaday-gem) [![Code Climate](https://codeclimate.com/github/ets-berkeley-edu/pikaday-gem.png)](https://codeclimate.com/github/ets-berkeley-edu/pikaday-gem)
 
-This project lets you use AngularJS with the Rails 3.x asset pipeline. It was forked from the [angular-rails gem](https://github.com/ludicast/angular-rails), since the project seems to have been abandoned and there's been a need to keep angularjs up to date within our own internal projects. The version number will by default track the unstable branch, although there are plans to always have both the latest stable and unstable versions available. Looking inside the [vendor folder](https://github.com/ets-berkeley-edu/angular-gem/tree/wip/vendor/assets/javascripts) should give you an idea of what's available.
+[Pikaday datepicker][pikaday] as a Ruby gem.
 
 ## Getting Started
 
-Add the gem to your application Gemfile:
+Add the gem to your Gemfile:
 
-    gem "angular-gem"
+```ruby
+gem "pikaday-gem"
+```
 
-Run `bundle install`. To bootstrap things, run:
+And run
 
-    rails g angular:install
+```bash
+bundle install
+```
+in the terminal to download the resources.
 
-## Specifying versions
+### Adding the files to your projects
 
-- By default, this gem will include the latest stable version of angular with ``//require angular`` in your application.<js/coffee> file.
-- You can switch to using the latest unstable version by pointing to ``//require angular-unstable``.
-- You can also force specific versions to be loaded with ``//require <VERSION>/angular-<VERSION>``, assuming the [source files](https://github.com/ets-berkeley-edu/angular-gem/tree/master/vendor/assets/javascripts) exist somewhere in the gem.
+In order for the files to load, you'll need to do add them.
 
-### Layout and namespacing
+`application.js`:
 
-Running `rails g angular:install` will create the following directory structure under `app/assets/javascripts/angular`:
+```javascript
+//= require pikaday
+```
 
-    controllers/
-    filters/
-    services/
-    widgets/
+`application.css`:
 
-It will also generate a `templates/` directory under app assets, where view templates can be stored.  This lets you use haml, etc. for your angular views.
+```css
+*= require pikaday
+```
 
-It will also add to the application.js file the appropriate requires.
+and you should be good to go.
 
-## Generators
+## Updating this plug-in
 
-angular-rails provides a simple generator to help get you started using angular.js with rails 3.1.  The generators will only create client side code (javascript).
+If you would like to update this gem you should take the following steps:
 
-So far we have a controller generator which generates a controller file if you rum
+1. `rake download VERSION=X.X.X`. If you don't specify the version, it will get the latest one.
+1. `rake tag VERSION=X.X.X` will tag the version you've specified as the standard version.
+1. Make a Pull request
 
-    rails g angular:controller MODELNAME
+Then the maintainer of the gem will need to do the following steps:
 
-This file is empty except for the class declaration, but I will be adding some RESTful controller functionality shortly.
+1. Update the version [lib/pikaday-gem/version.rb](lib/pikaday-gem/version.rb)
+1. Run ``gem build pikaday-gem.gemspec`` to package the gem
+1. Once satisfied, push the gem up to RubyGems.org with ``gem push pikaday-gem-<VERSION>.gem``
+
+[pikaday]: https://github.com/dbushell/Pikaday

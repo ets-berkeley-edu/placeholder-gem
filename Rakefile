@@ -8,8 +8,6 @@ end
 Bundler::GemHelper.install_tasks
 
 require 'rake'
-# http://ruby-doc.org/stdlib/libdoc/net/http/rdoc/classes/Net/HTTP.html
-require 'rake/testtask'
 require 'open-uri'
 require 'json'
 
@@ -17,7 +15,7 @@ dir_assets = 'vendor/assets/'
 dir_js = dir_assets + 'javascripts'
 dir_css = dir_assets + 'stylesheets'
 
-desc 'Downloads the pickaday CSS and JavaScript files from GitHub'
+desc 'Downloads the pikaday CSS and JavaScript files from GitHub'
 task :download do |t|
 
   def create_dir dir, version
@@ -115,5 +113,3 @@ task :tag_default do |t|
   copy_files dir_js, version
   copy_files dir_css, version
 end
-
-task :default => :test
