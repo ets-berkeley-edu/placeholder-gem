@@ -14,7 +14,6 @@ Gem::Specification.new do |s|
   s.description = "Include the Pikaday datepicker from @dbushell in your Rails projects"
 
   s.files = Dir["{app,config,db,lib,vendor}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.md"]
-  s.test_files = Dir["test/**/*"]
   s.add_dependency "railties", [">= 3.1"]
 
   s.add_development_dependency "bundler", [">= 1.2.2"]
