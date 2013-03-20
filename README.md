@@ -1,5 +1,5 @@
 # Pikaday Gem
-[![Gem Version](https://badge.fury.io/rb/pikaday-gem.png)](http://badge.fury.io/rb/pikaday-gem) [![Build Status](https://secure.travis-ci.org/ets-berkeley-edu/pikaday-gem.png)](http://travis-ci.org/ets-berkeley-edu/pikaday-gem) [![Dependency Status](https://gemnasium.com/ets-berkeley-edu/pikaday-gem.png)](https://gemnasium.com/ets-berkeley-edu/pikaday-gem) [![Code Climate](https://codeclimate.com/github/ets-berkeley-edu/pikaday-gem.png)](https://codeclimate.com/github/ets-berkeley-edu/pikaday-gem)
+[![Gem Version](https://badge.fury.io/rb/pikaday-gem.png)](http://badge.fury.io/rb/pikaday-gem) [![Dependency Status](https://gemnasium.com/ets-berkeley-edu/pikaday-gem.png)](https://gemnasium.com/ets-berkeley-edu/pikaday-gem) [![Code Climate](https://codeclimate.com/github/ets-berkeley-edu/pikaday-gem.png)](https://codeclimate.com/github/ets-berkeley-edu/pikaday-gem)
 
 [Pikaday datepicker][pikaday] as a Ruby gem.
 
