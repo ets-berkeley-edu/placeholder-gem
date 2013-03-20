@@ -49,5 +49,6 @@ Then the maintainer of the gem will need to do the following steps:
 1. Update the version [lib/pikaday-gem/version.rb](lib/pikaday-gem/version.rb)
 1. Run ``gem build pikaday-gem.gemspec`` to package the gem
 1. Once satisfied, push the gem up to RubyGems.org with ``gem push pikaday-gem-<VERSION>.gem``
+1. Update [the changelog](CHANGELOG.md)
 
 [pikaday]: https://github.com/dbushell/Pikaday
