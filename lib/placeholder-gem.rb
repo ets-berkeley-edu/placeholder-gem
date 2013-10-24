@@ -1,6 +1,6 @@
 require "rails/engine"
 
-module PikadayGem
+module PlaceholderGem
 	class Engine < Rails::Engine
 	end
 end

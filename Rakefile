@@ -13,9 +13,8 @@ require 'json'
 
 dir_assets = 'vendor/assets/'
 dir_js = dir_assets + 'javascripts'
-dir_css = dir_assets + 'stylesheets'
 
-desc 'Downloads the pikaday CSS and JavaScript files from GitHub'
+desc 'Downloads the Placeholder.js JavaScript files from GitHub'
 task :download do |t|
 
   def create_dir dir, version
@@ -23,14 +22,20 @@ task :download do |t|
     Dir.mkdir(dir_name) unless Dir.exist?(dir_name)
   end
 
-  def download_file url, dir, filename, version
+  def download_file urls, dir, filename, version
     Dir.chdir(File.join(dir, version)) do
       if File.exists?(filename)
         puts " #{dir + '/' + version + '/' + filename} already exists"
         next
       end
-      puts " #{url}"
-      open(filename, "w") { |file| file.write(open(url).read)}
+      code = ''
+      urls.reverse_each do |url|
+        puts " #{url}"
+        code += open(url).read
+      end
+      open(filename, "w") { |file| file.write(code)}
+      puts " Concatenating to #{dir + '/' + version + '/' + filename}"
+      puts " Done!"
     end
   end
 
@@ -40,7 +45,7 @@ task :download do |t|
   puts "Target version: #{version.chomp('/')}"
 
   # Get the different versions
-  tags_url = 'https://api.github.com/repos/dbushell/Pikaday/tags'
+  tags_url = 'https://api.github.com/repos/jamesallardice/Placeholders.js/tags'
   result = JSON.parse(open(tags_url).read)
   versions = result.map { |item| item['name'] }
 
@@ -63,16 +68,23 @@ task :download do |t|
 
   # Creating the necessary directories
   create_dir dir_js, get_version
-  create_dir dir_css, get_version
 
-  # Download the right files
-  url_root = 'https://raw.github.com/dbushell/Pikaday/' + commit + '/'
-  url_js = url_root + 'pikaday.js'
-  url_css = url_root + '/css/pikaday.css'
+  # Download all the right files
+  url_root = 'https://raw.github.com/jamesallardice/Placeholders.js/' + commit + '/'
+  url_tree = 'https://api.github.com/repos/jamesallardice/Placeholders.js/git/trees/' + commit + '?recursive=1'
+  urls = []
 
-  puts "Downloading... \n"
-  download_file url_js, dir_js, 'pikaday.js', get_version
-  download_file url_css, dir_css, 'pikaday.css', get_version
+  result_tree = JSON.parse(open(url_tree).read)
+
+  result_tree['tree'].each do |file|
+    if file['path'] =~ /lib\/\w+.js/
+      url = url_root + file['path']
+      urls.push(url)
+    end
+  end
+  puts "Searching #{url_tree}"
+  puts "Downloading..."
+  download_file urls, dir_js, 'placeholder.js', get_version
 
 end
 
@@ -111,5 +123,4 @@ task :tag_default do |t|
   end
 
   copy_files dir_js, version
-  copy_files dir_css, version
 end
