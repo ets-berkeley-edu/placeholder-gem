@@ -1,4 +1,4 @@
-# Placeholder Gem
+# Placeholder Gem [![Gem Version](https://badge.fury.io/rb/placeholder-gem.png)](http://badge.fury.io/rb/placeholder-gem)
 
 [Placeholders.js HTML polyfill][placeholder] as a Ruby gem.
 
