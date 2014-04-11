@@ -8,4 +8,5 @@ test/dummy/tmp/
 test/tmp/
 *.gem
 *.iml
+.DS_Store
 coverage/
