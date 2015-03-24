@@ -1,6 +1,8 @@
-# Placeholder Gem [![Gem Version](https://badge.fury.io/rb/placeholder-gem.svg)](http://badge.fury.io/rb/placeholder-gem)
+# [Deprecated/Unsupported] Placeholder Gem [![Gem Version](https://badge.fury.io/rb/placeholder-gem.svg)](http://badge.fury.io/rb/placeholder-gem)
 
 [Placeholders.js HTML polyfill][placeholder] as a Ruby gem.
+
+**03/25/2015 - Unsupported: Due to the ETS Berkeley team now using [npm](https://www.npmjs.com/) for front-end dependencies, this gem is no longer supported.**
 
 ## Getting Started
 
